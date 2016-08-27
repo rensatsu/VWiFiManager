@@ -1,0 +1,323 @@
+﻿using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace VWiFiManager
+{
+    public partial class MainForm : Form
+    {
+        private uint m_previousExecutionState;
+        private bool isAppMinimized = false;
+
+        public MainForm()
+        {
+            InitializeComponent();
+
+            // Set new state to prevent system sleep (note: still allows screen saver)
+            m_previousExecutionState = NativeMethods.SetThreadExecutionState(
+                NativeMethods.ES_CONTINUOUS | NativeMethods.ES_SYSTEM_REQUIRED);
+            if (0 == m_previousExecutionState)
+            {
+                MessageBox.Show("Call to SetThreadExecutionState failed unexpectedly.",
+                    "NoSleep", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // No way to recover; fail gracefully
+                Close();
+            }
+        }
+
+        public class NetworkSetting
+        {
+            public string name = "";
+            public string value = "";
+            public NetworkSetting(string name, string value)
+            {
+                this.name = name;
+                this.value = value;
+            }
+
+            public NetworkSetting(string item)
+            {
+                item = item.Trim();
+                Match match = Regex.Match(item, @"([^:]+):\s{1,}(.*)");
+                Match matchMac = Regex.Match(item, "([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})");
+                if (match.Success)
+                {
+                    this.name = match.Groups[1].Value.Trim().Replace("\"", "");
+                    this.value = match.Groups[2].Value.Trim().Replace("\"", "");
+                }
+                else if (matchMac.Success)
+                {
+                    this.name = "Device";
+                    this.value = (matchMac.Groups[0].Value).Trim().Replace("\"", "");
+                }
+            }
+
+            public string ToString()
+            {
+                if (this.name == "" && this.value == "")
+                {
+                    return "";
+                }
+                else
+                {
+                    return this.name + " = " + this.value;
+                }
+            }
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Restore previous state
+            if (0 == NativeMethods.SetThreadExecutionState(m_previousExecutionState))
+            {
+                // No way to recover; already exiting
+            }
+        }
+
+        private void RegisterInStartup(bool isChecked)
+        {
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey
+                    ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            if (isChecked)
+            {
+                registryKey.SetValue("VWiFiManager", Application.ExecutablePath);
+            }
+            else
+            {
+                registryKey.DeleteValue("VWiFiManager");
+            }
+        }
+
+        private void setupNetwork()
+        {
+            if (Properties.Settings.Default.NetworkName.Length < 1)
+            {
+                Properties.Settings.Default.NetworkName = "LinkSoft WiFi - " + (new Random().Next(1000, 9999).ToString());
+            }
+
+            if (Properties.Settings.Default.NetworkPass.Length < 8)
+            {
+                Properties.Settings.Default.NetworkPass = "Pass_" + (new Random().Next(1000, 9999).ToString());
+            }
+
+            Properties.Settings.Default.Save();
+            inputName.Text = Properties.Settings.Default.NetworkName;
+            inputPass.Text = Properties.Settings.Default.NetworkPass;
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.AppUpgraded)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.AppUpgraded = false;
+                Properties.Settings.Default.Save();
+            }
+
+            setupNetwork();
+
+            autoStartCheck.Checked = Properties.Settings.Default.AutoStart;
+            if (Properties.Settings.Default.AutoStart)
+            {
+                this.WindowState = FormWindowState.Minimized;
+            }
+
+            statusThread.RunWorkerAsync();
+
+            this.Text += " (Ver: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + ")";
+
+            new VWiFiManager.Deps.Update();
+        }
+
+        private string startProcess(string filename, string arguments = "")
+        {
+            System.Diagnostics.Process pProcess = new System.Diagnostics.Process();
+            pProcess.StartInfo.FileName = filename;
+            pProcess.StartInfo.Arguments = arguments;
+            pProcess.StartInfo.UseShellExecute = false;
+            pProcess.StartInfo.RedirectStandardOutput = true;
+            pProcess.StartInfo.CreateNoWindow = true;
+            pProcess.StartInfo.StandardOutputEncoding = Encoding.GetEncoding(866);
+            pProcess.Start();
+            string strOutput = pProcess.StandardOutput.ReadToEnd();
+            pProcess.WaitForExit();
+
+            return strOutput;
+        }
+
+        private void statusThread_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                string strOutput = startProcess("netsh", "wlan show hostednetwork");
+
+                string[] strOutputArray = strOutput.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                
+                List<NetworkSetting> settings = new List<NetworkSetting>();
+                
+                for (int i=0; i<strOutputArray.Length; i++)
+                {
+                    NetworkSetting ns = new NetworkSetting(strOutputArray[i]);
+                    if (ns.ToString() != "")
+                    {
+                        settings.Add(ns);
+                    }
+                }
+                
+                string text = "";
+                foreach (NetworkSetting item in settings)
+                {
+                    text += item.ToString() + "\r\n";
+                };
+
+                Invoke((MethodInvoker)delegate
+                {
+                    statusBox.Text = text;
+                    if (settings.Count < 3)
+                    {
+                        // something wrong (no virtual wifi support)
+                        statusBox.Text = strOutput;
+                        button1.Visible = false;
+                        button2.Visible = false;
+                        inputName.ReadOnly = true;
+                        inputPass.ReadOnly = true;
+                    }
+                    else if (settings.Count > 6)
+                    {
+                        // network enabled
+                        button1.Visible = false;
+                        button2.Visible = true;
+                        inputName.ReadOnly = true;
+                        inputPass.ReadOnly = true;
+                    }
+                    else
+                    {
+                        // network disabled
+                        button1.Visible = true;
+                        button2.Visible = false;
+                        inputName.ReadOnly = false;
+                        inputPass.ReadOnly = false;
+
+                        if (Properties.Settings.Default.AutoStart)
+                        {
+                            startHostedNetwork();
+                            Thread.Sleep(1000);
+                        }
+                    }
+                });
+
+                int sleepTime = isAppMinimized ? 5000 : 500;
+                Thread.Sleep(sleepTime);
+            }
+        }
+
+        private void startHostedNetwork()
+        {
+            Properties.Settings.Default.NetworkName = inputName.Text;
+            Properties.Settings.Default.NetworkPass = inputPass.Text;
+
+            setupNetwork();
+
+            if (inputName.Text.Length <= 0)
+            {
+                MessageBox.Show("Network name is too short!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (inputPass.Text.Length < 8)
+            {
+                MessageBox.Show("Password is too short!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (inputName.Text.IndexOf('"') != -1 || inputPass.Text.IndexOf('"') != -1)
+            {
+                MessageBox.Show("Don't use '\"' symbol in network name or password!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string wlanSet = String.Format("wlan set hostednetwork mode=allow \"ssid={0}\" \"key={1}\"",
+                inputName.Text,
+                inputPass.Text);
+
+            startProcess("netsh", wlanSet);
+            startProcess("netsh", "wlan start hostednetwork");
+
+            // MessageBox.Show(strOutput1 + "\n" + strOutput2, "Starting network", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            startHostedNetwork();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            startProcess("netsh", "wlan stop hostednetwork");
+            startProcess("netsh", "wlan set hostednetwork mode=disallow");
+            autoStartCheck.Checked = false;
+        }
+
+        private void trayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Visible = true;
+            ShowInTaskbar = true;
+            Show();
+            WindowState = FormWindowState.Normal;
+            BringToFront();
+            isAppMinimized = false;
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                ShowInTaskbar = false;
+                isAppMinimized = true;
+                Visible = false;
+            }
+            else
+            {
+                isAppMinimized = false;
+            }
+        }
+
+        private void autoStartCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox snd = (CheckBox)sender;
+            Properties.Settings.Default.AutoStart = snd.Checked;
+            RegisterInStartup(snd.Checked);
+            Properties.Settings.Default.Save();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            startProcess("IcsManagerGUI.exe");
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://linksoft.cf/");
+        }
+    }
+
+    internal static class NativeMethods
+    {
+        // Import SetThreadExecutionState Win32 API and necessary flags
+        [DllImport("kernel32.dll")]
+        public static extern uint SetThreadExecutionState(uint esFlags);
+        public const uint ES_CONTINUOUS = 0x80000000;
+        public const uint ES_SYSTEM_REQUIRED = 0x00000001;
+    }
+}
