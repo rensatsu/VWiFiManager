@@ -12,7 +12,7 @@ namespace VWiFiManager.Deps
 {
     class Update
     {
-        private string versionInfoUrl = "https://linksoft.cf/apps/vwifimanager/version.txt";
+        private string versionInfoUrl = "https://ptdev.pw/apps/vwifimanager/version.txt";
         public Update()
         {
             Thread thread = new Thread(new ThreadStart(CheckUpdate));
@@ -53,14 +53,12 @@ namespace VWiFiManager.Deps
                 }
                 catch (WebException ex)
                 {
-                    // MessageBox.Show(ex.Message);
                     return;
                 }
 
                 string[] strContent = content.Split(';');
                 if (strContent.Length != 3)
                 {
-                    // MessageBox.Show("Text file must be in this format \"version;link;hash\"");
                     return;
                 }
 
@@ -72,21 +70,6 @@ namespace VWiFiManager.Deps
 
                 if (updVersion > curVersion)
                 {
-                    /*
-                    string msg = String.Format(
-                        "New version available!\nCurrent version: {0}\nVersion on server: {1}\nDo you want to update?",
-                        curVersion,
-                        updVersion);
-                    DialogResult res = MessageBox.Show(
-                        msg,
-                        "VK Player :: Update",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Information);
-                    if (res == DialogResult.Yes)
-                    {
-                        DownloadUpdate(updLink, hashStr);
-                    }
-                    */
                     string msg = String.Format(
                         "New version available! Click 'OK' to update.\nCurrent version: {0}\nVersion on server: {1}",
                         curVersion,

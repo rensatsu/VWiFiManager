@@ -56,18 +56,18 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 15);
+            this.label1.Size = new System.Drawing.Size(61, 15);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Название сети";
+            this.label1.Text = "Net Name";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 39);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 15);
+            this.label2.Size = new System.Drawing.Size(79, 15);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Пароль сети";
+            this.label2.Text = "Net Password";
             // 
             // inputPass
             // 
@@ -94,7 +94,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(274, 27);
             this.button1.TabIndex = 6;
-            this.button1.Text = "Старт";
+            this.button1.Text = "Start";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -105,7 +105,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(274, 27);
             this.button2.TabIndex = 7;
-            this.button2.Text = "Стоп";
+            this.button2.Text = "Stop";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -126,9 +126,9 @@
             this.autoStartCheck.AutoSize = true;
             this.autoStartCheck.Location = new System.Drawing.Point(148, 67);
             this.autoStartCheck.Name = "autoStartCheck";
-            this.autoStartCheck.Size = new System.Drawing.Size(192, 19);
+            this.autoStartCheck.Size = new System.Drawing.Size(191, 19);
             this.autoStartCheck.TabIndex = 8;
-            this.autoStartCheck.Text = "Автоматически запускать сеть";
+            this.autoStartCheck.Text = "Automatically start the network";
             this.autoStartCheck.UseVisualStyleBackColor = true;
             this.autoStartCheck.CheckedChanged += new System.EventHandler(this.autoStartCheck_CheckedChanged);
             // 
@@ -139,7 +139,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(234, 27);
             this.button3.TabIndex = 9;
-            this.button3.Text = "Настройка раздачи интернета";
+            this.button3.Text = "Internet Sharing Configuration";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -148,10 +148,10 @@
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Location = new System.Drawing.Point(12, 68);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(99, 15);
+            this.linkLabel1.Size = new System.Drawing.Size(53, 15);
             this.linkLabel1.TabIndex = 10;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "https://linksoft.cf";
+            this.linkLabel1.Text = "Web Site";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // MainForm

@@ -243,7 +243,7 @@ namespace VWiFiManager
 
             if (inputName.Text.IndexOf('"') != -1 || inputPass.Text.IndexOf('"') != -1)
             {
-                MessageBox.Show("Don't use '\"' symbol in network name or password!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Don't use '\"' symbol in the network name or password!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -308,7 +308,7 @@ namespace VWiFiManager
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://linksoft.cf/");
+            System.Diagnostics.Process.Start("https://github.com/linkshift/VWiFiManager");
         }
     }
 

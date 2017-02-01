@@ -22,7 +22,7 @@ namespace VWiFiManager
             {
                 if (!mutex.WaitOne(0, false))
                 {
-                    MessageBox.Show("Приложение уже запущено!", "VWiFiManager", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Application is already running!", "VWiFiManager", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
