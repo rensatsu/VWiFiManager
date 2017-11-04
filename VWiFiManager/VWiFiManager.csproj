@@ -117,9 +117,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"V:\!Sources\VersionDump\VersionDump\bin\x64\Release\VersionDump.exe" "VWiFiManager" "V:\VWiFiManager\VWiFiManager.exe" "https://github.com/rensatsu/VWiFiManager/raw/master/Setup/VWiFiManager_Setup.exe" "V:\!Sources\VWiFiManager\version.txt"
+    <PostBuildEvent>"C:\Program Files (x86)\Inno Setup 5\ISCC.exe" "V:\VWiFiManager\app.setup_res\inno_setup.iss"
 
-"C:\Program Files (x86)\Inno Setup 5\ISCC.exe" "V:\VWiFiManager\app.setup_res\inno_setup.iss"
+"V:\!Sources\VersionDump\VersionDump\bin\x64\Release\VersionDump.exe" "VWiFiManager" "V:\!Sources\VWiFiManager\Setup\VWiFiManager_Setup.exe" "https://github.com/rensatsu/VWiFiManager/raw/master/Setup/VWiFiManager_Setup.exe" "V:\!Sources\VWiFiManager\version.txt"
+
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
