@@ -71,6 +71,13 @@ namespace VWiFiManager
             }
         }
 
+        public string GetAssemblyAttribute<T>(Func<T, string> value)
+            where T : Attribute
+        {
+            T attribute = (T)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(T));
+            return value.Invoke(attribute);
+        }
+
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Restore previous state
@@ -130,8 +137,8 @@ namespace VWiFiManager
 
             this.Text = String.Format(
                 "{0} (Ver: {1})",
-                Assembly.GetExecutingAssembly().GetName().FullName,
-                Assembly.GetExecutingAssembly().GetName().Version
+                GetAssemblyAttribute<AssemblyTitleAttribute>(a => a.Title),
+                Assembly.GetExecutingAssembly().GetName().Version.ToString()
             );
 
             new Deps.Update();
