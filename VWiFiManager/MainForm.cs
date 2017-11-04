@@ -18,7 +18,6 @@ namespace VWiFiManager
     public partial class MainForm : Form
     {
         private uint m_previousExecutionState;
-        private bool isAppMinimized = false;
 
         public MainForm()
         {
@@ -63,7 +62,7 @@ namespace VWiFiManager
                 }
             }
 
-            public string ToString()
+            public override string ToString()
             {
                 if (this.name == "" && this.value == "")
                 {
@@ -76,7 +75,7 @@ namespace VWiFiManager
             }
         }
 
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Restore previous state
             if (0 == NativeMethods.SetThreadExecutionState(m_previousExecutionState))
@@ -103,12 +102,12 @@ namespace VWiFiManager
         {
             if (Properties.Settings.Default.NetworkName.Length < 1)
             {
-                Properties.Settings.Default.NetworkName = "LinkSoft WiFi - " + (new Random().Next(1000, 9999).ToString());
+                Properties.Settings.Default.NetworkName = "RenCloud WiFi - " + (new Random().Next(1000, 9999).ToString());
             }
 
             if (Properties.Settings.Default.NetworkPass.Length < 8)
             {
-                Properties.Settings.Default.NetworkPass = "Pass_" + (new Random().Next(1000, 9999).ToString());
+                Properties.Settings.Default.NetworkPass = "Pass_" + (new Random().Next(10000, 99999).ToString());
             }
 
             Properties.Settings.Default.Save();
@@ -116,8 +115,10 @@ namespace VWiFiManager
             inputPass.Text = Properties.Settings.Default.NetworkPass;
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
+            // this.Hide();
+            // this.ShowInTaskbar = false;
             if (Properties.Settings.Default.AppUpgraded)
             {
                 Properties.Settings.Default.Upgrade();
@@ -128,10 +129,6 @@ namespace VWiFiManager
             setupNetwork();
 
             autoStartCheck.Checked = Properties.Settings.Default.AutoStart;
-            if (Properties.Settings.Default.AutoStart)
-            {
-                this.WindowState = FormWindowState.Minimized;
-            }
 
             statusThread.RunWorkerAsync();
 
@@ -160,65 +157,66 @@ namespace VWiFiManager
         {
             while (true)
             {
-                string strOutput = startProcess("netsh", "wlan show hostednetwork");
-
-                string[] strOutputArray = strOutput.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-                
-                List<NetworkSetting> settings = new List<NetworkSetting>();
-                
-                for (int i=0; i<strOutputArray.Length; i++)
+                if (this.WindowState != FormWindowState.Minimized)
                 {
-                    NetworkSetting ns = new NetworkSetting(strOutputArray[i]);
-                    if (ns.ToString() != "")
-                    {
-                        settings.Add(ns);
-                    }
-                }
-                
-                string text = "";
-                foreach (NetworkSetting item in settings)
-                {
-                    text += item.ToString() + "\r\n";
-                };
+                    string strOutput = startProcess("netsh", "wlan show hostednetwork");
 
-                Invoke((MethodInvoker)delegate
-                {
-                    statusBox.Text = text;
-                    if (settings.Count < 3)
-                    {
-                        // something wrong (no virtual wifi support)
-                        statusBox.Text = strOutput;
-                        button1.Visible = false;
-                        button2.Visible = false;
-                        inputName.ReadOnly = true;
-                        inputPass.ReadOnly = true;
-                    }
-                    else if (settings.Count > 6)
-                    {
-                        // network enabled
-                        button1.Visible = false;
-                        button2.Visible = true;
-                        inputName.ReadOnly = true;
-                        inputPass.ReadOnly = true;
-                    }
-                    else
-                    {
-                        // network disabled
-                        button1.Visible = true;
-                        button2.Visible = false;
-                        inputName.ReadOnly = false;
-                        inputPass.ReadOnly = false;
+                    string[] strOutputArray = strOutput.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-                        if (Properties.Settings.Default.AutoStart)
+                    List<NetworkSetting> settings = new List<NetworkSetting>();
+
+                    for (int i = 0; i < strOutputArray.Length; i++)
+                    {
+                        NetworkSetting ns = new NetworkSetting(strOutputArray[i]);
+                        if (ns.ToString() != "")
                         {
-                            startHostedNetwork();
-                            Thread.Sleep(1000);
+                            settings.Add(ns);
                         }
                     }
-                });
 
-                int sleepTime = isAppMinimized ? 5000 : 500;
-                Thread.Sleep(sleepTime);
+                    string text = "";
+                    foreach (NetworkSetting item in settings)
+                    {
+                        text += item.ToString() + "\r\n";
+                    };
+
+                    Invoke((MethodInvoker)delegate
+                    {
+                        statusBox.Text = text;
+                        if (settings.Count < 3)
+                        {
+                            statusBox.Text = strOutput;
+                            button1.Visible = false;
+                            button2.Visible = false;
+                            inputName.Enabled = false;
+                            inputPass.Enabled = false;
+                        }
+                        else if (settings.Count > 6)
+                        {
+                        // network enabled
+                        button1.Visible = false;
+                            button2.Visible = true;
+                            inputName.Enabled = false;
+                            inputPass.Enabled = false;
+                        }
+                        else
+                        {
+                        // network disabled
+                        button1.Visible = true;
+                            button2.Visible = false;
+                            inputName.Enabled = true;
+                            inputPass.Enabled = true;
+
+                            if (Properties.Settings.Default.AutoStart)
+                            {
+                                startHostedNetwork();
+                                Thread.Sleep(1000);
+                            }
+                        }
+                    });
+                }
+
+                Thread.Sleep(500);
             }
         }
 
@@ -243,7 +241,7 @@ namespace VWiFiManager
 
             if (inputName.Text.IndexOf('"') != -1 || inputPass.Text.IndexOf('"') != -1)
             {
-                MessageBox.Show("Don't use '\"' symbol in the network name or password!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Don't use '\"' symbol in network name or password!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -271,25 +269,17 @@ namespace VWiFiManager
 
         private void trayIcon_DoubleClick(object sender, EventArgs e)
         {
-            Visible = true;
             ShowInTaskbar = true;
-            Show();
+            this.Show();
             WindowState = FormWindowState.Normal;
-            BringToFront();
-            isAppMinimized = false;
+            this.BringToFront();
         }
 
-        private void MainForm_Resize(object sender, EventArgs e)
+        private void Form1_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
                 ShowInTaskbar = false;
-                isAppMinimized = true;
-                Visible = false;
-            }
-            else
-            {
-                isAppMinimized = false;
             }
         }
 
@@ -308,7 +298,7 @@ namespace VWiFiManager
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/linkshift/VWiFiManager");
+            System.Diagnostics.Process.Start(linkLabel1.Text);
         }
     }
 

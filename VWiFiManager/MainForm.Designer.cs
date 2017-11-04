@@ -56,18 +56,18 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(61, 15);
+            this.label1.Size = new System.Drawing.Size(86, 15);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Net Name";
+            this.label1.Text = "Название сети";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 39);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(79, 15);
+            this.label2.Size = new System.Drawing.Size(76, 15);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Net Password";
+            this.label2.Text = "Пароль сети";
             // 
             // inputPass
             // 
@@ -78,7 +78,7 @@
             // 
             // statusBox
             // 
-            this.statusBox.Font = new System.Drawing.Font("Consolas", 8F);
+            this.statusBox.Font = new System.Drawing.Font("Consolas", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.statusBox.Location = new System.Drawing.Point(15, 91);
             this.statusBox.Multiline = true;
             this.statusBox.Name = "statusBox";
@@ -94,7 +94,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(274, 27);
             this.button1.TabIndex = 6;
-            this.button1.Text = "Start";
+            this.button1.Text = "Старт";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -105,7 +105,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(274, 27);
             this.button2.TabIndex = 7;
-            this.button2.Text = "Stop";
+            this.button2.Text = "Стоп";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -124,11 +124,11 @@
             // autoStartCheck
             // 
             this.autoStartCheck.AutoSize = true;
-            this.autoStartCheck.Location = new System.Drawing.Point(148, 67);
+            this.autoStartCheck.Location = new System.Drawing.Point(15, 66);
             this.autoStartCheck.Name = "autoStartCheck";
-            this.autoStartCheck.Size = new System.Drawing.Size(191, 19);
+            this.autoStartCheck.Size = new System.Drawing.Size(193, 19);
             this.autoStartCheck.TabIndex = 8;
-            this.autoStartCheck.Text = "Automatically start the network";
+            this.autoStartCheck.Text = "Автоматически запускать сеть";
             this.autoStartCheck.UseVisualStyleBackColor = true;
             this.autoStartCheck.CheckedChanged += new System.EventHandler(this.autoStartCheck_CheckedChanged);
             // 
@@ -139,19 +139,19 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(234, 27);
             this.button3.TabIndex = 9;
-            this.button3.Text = "Internet Sharing Configuration";
+            this.button3.Text = "Настройка раздачи интернета";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(12, 68);
+            this.linkLabel1.Location = new System.Drawing.Point(371, 67);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(53, 15);
+            this.linkLabel1.Size = new System.Drawing.Size(158, 15);
             this.linkLabel1.TabIndex = 10;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "Web Site";
+            this.linkLabel1.Text = "https://github.com/rensatsu";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // MainForm
@@ -169,16 +169,16 @@
             this.Controls.Add(this.inputPass);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.inputName);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Virtual Wi-Fi Manager";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.Resize += new System.EventHandler(this.MainForm_Resize);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
 
