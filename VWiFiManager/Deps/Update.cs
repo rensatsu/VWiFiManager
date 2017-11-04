@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using VWiFiManager.Deps;
 
 namespace VWiFiManager.Deps
 {
@@ -53,14 +50,12 @@ namespace VWiFiManager.Deps
                 }
                 catch (WebException)
                 {
-                    // MessageBox.Show(ex.Message);
                     return;
                 }
 
                 string[] strContent = content.Split(';');
                 if (strContent.Length != 3)
                 {
-                    // MessageBox.Show("Text file must be in this format \"version;link;hash\"");
                     return;
                 }
 
@@ -68,32 +63,17 @@ namespace VWiFiManager.Deps
                 string updLink = strContent[1];
                 string hashStr = strContent[2];
 
-                Version curVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                Version curVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
                 if (updVersion > curVersion)
                 {
-                    /*
-                    string msg = String.Format(
-                        "New version available!\nCurrent version: {0}\nVersion on server: {1}\nDo you want to update?",
-                        curVersion,
-                        updVersion);
-                    DialogResult res = MessageBox.Show(
-                        msg,
-                        "VK Player :: Update",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Information);
-                    if (res == DialogResult.Yes)
-                    {
-                        DownloadUpdate(updLink, hashStr);
-                    }
-                    */
                     string msg = String.Format(
                         "New version available! Click 'OK' to update.\nCurrent version: {0}\nVersion on server: {1}",
                         curVersion,
                         updVersion);
                     DialogResult res = MessageBox.Show(
                         msg,
-                        "VWiFiManager :: Update",
+                        $"{Assembly.GetExecutingAssembly().GetName().FullName} :: Update",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                     DownloadUpdate(updLink, hashStr);

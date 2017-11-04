@@ -2,15 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VWiFiManager
@@ -132,9 +128,13 @@ namespace VWiFiManager
 
             statusThread.RunWorkerAsync();
 
-            this.Text += " (Ver: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + ")";
+            this.Text = String.Format(
+                "{0} (Ver: {1})",
+                Assembly.GetExecutingAssembly().GetName().FullName,
+                Assembly.GetExecutingAssembly().GetName().Version
+            );
 
-            new VWiFiManager.Deps.Update();
+            new Deps.Update();
         }
 
         private string startProcess(string filename, string arguments = "")
@@ -174,17 +174,18 @@ namespace VWiFiManager
                         }
                     }
 
-                    string text = "";
-                    foreach (NetworkSetting item in settings)
+                    StringBuilder text = new StringBuilder();
+                    settings.ForEach((NetworkSetting item) =>
                     {
-                        text += item.ToString() + "\r\n";
-                    };
+                        text.AppendLine(item.ToString());
+                    });
 
                     Invoke((MethodInvoker)delegate
                     {
-                        statusBox.Text = text;
+                        statusBox.Text = text.ToString();
                         if (settings.Count < 3)
                         {
+                            // wlan host is not available
                             statusBox.Text = strOutput;
                             button1.Visible = false;
                             button2.Visible = false;
@@ -193,16 +194,16 @@ namespace VWiFiManager
                         }
                         else if (settings.Count > 6)
                         {
-                        // network enabled
-                        button1.Visible = false;
+                            // network enabled
+                            button1.Visible = false;
                             button2.Visible = true;
                             inputName.Enabled = false;
                             inputPass.Enabled = false;
                         }
                         else
                         {
-                        // network disabled
-                        button1.Visible = true;
+                            // network disabled
+                            button1.Visible = true;
                             button2.Visible = false;
                             inputName.Enabled = true;
                             inputPass.Enabled = true;
@@ -241,7 +242,7 @@ namespace VWiFiManager
 
             if (inputName.Text.IndexOf('"') != -1 || inputPass.Text.IndexOf('"') != -1)
             {
-                MessageBox.Show("Don't use '\"' symbol in network name or password!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Symbol '\"' is not allowed in both network name and password!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -251,8 +252,6 @@ namespace VWiFiManager
 
             startProcess("netsh", wlanSet);
             startProcess("netsh", "wlan start hostednetwork");
-
-            // MessageBox.Show(strOutput1 + "\n" + strOutput2, "Starting network", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button1_Click(object sender, EventArgs e)

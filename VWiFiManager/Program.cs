@@ -32,5 +32,6 @@ namespace VWiFiManager
         }
 
         private static string appGuid = "22A5BC39-B524-46BC-B2C5-94F11CE3ED28";
+        private static string appTitle = System.Reflection.Assembly.GetExecutingAssembly().GetName().FullName;
     }
 }
