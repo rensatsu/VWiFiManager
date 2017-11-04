@@ -17,7 +17,7 @@
 * Программой поддерживаются следующие системы: Windows 7, Windows 8, Windows 8.1, Windows 10.
 * Требуется аппаратная поддержка Virtual Wi-Fi.
 
-[Скачать установщик](Setup/VWiFiManager_Setup.exe)
+[Скачать установщик](https://github.com/rensatsu/VWiFiManager/raw/master/Setup/VWiFiManager_Setup.exe)
 
 
 ## Настройка
