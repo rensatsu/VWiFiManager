@@ -117,7 +117,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"V:\!Sources\VersionDump\VersionDump\bin\x64\Release\VersionDump.exe" "VWiFiManager" "V:\VWiFiManager\app.setup\VWiFiManager_setup.exe" "https://github.com/rensatsu/VWiFiManager/VWiFiManager_Setup.exe" "V:\!Sources\VWiFiManager\version.txt"
+    <PostBuildEvent>"V:\!Sources\VersionDump\VersionDump\bin\x64\Release\VersionDump.exe" "VWiFiManager" "V:\VWiFiManager\app.setup\VWiFiManager_setup.exe" "https://github.com/rensatsu/VWiFiManager/raw/master/Setup/VWiFiManager_Setup.exe" "V:\!Sources\VWiFiManager\version.txt"
 
 "C:\Program Files (x86)\Inno Setup 5\ISCC.exe" "V:\VWiFiManager\app.setup_res\inno_setup.iss"
 </PostBuildEvent>

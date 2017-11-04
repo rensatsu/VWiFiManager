@@ -45,6 +45,6 @@
 
 
 ## Исходный код
-Исходный код приложения распространяется на условиях [Unlicense](http://unlicense.org/) (копия приложена к архиву).
+Исходный код приложения распространяется на условиях [Unlicense](LICENSE.txt).
 
 В программе так же используется [Internet Connection Sharing Manager](https://github.com/utapyngo/icsmanager) для управления раздачей интернета.

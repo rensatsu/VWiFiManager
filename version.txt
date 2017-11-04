@@ -1,1 +1,1 @@
-1.1.6517.42754;https://github.com/rensatsu/VWiFiManager/VWiFiManager_Setup.exe;dab16e98057fdca8e7c5efdc0c83f51f
+1.1.6517.42754;https://github.com/rensatsu/VWiFiManager/raw/master/Setup/VWiFiManager_Setup.exe;dab16e98057fdca8e7c5efdc0c83f51f
