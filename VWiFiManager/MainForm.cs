@@ -164,68 +164,67 @@ namespace VWiFiManager
         {
             while (true)
             {
-                if (this.WindowState != FormWindowState.Minimized)
+                string strOutput = startProcess("netsh", "wlan show hostednetwork");
+
+                string[] strOutputArray = strOutput.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+                List<NetworkSetting> settings = new List<NetworkSetting>();
+
+                for (int i = 0; i < strOutputArray.Length; i++)
                 {
-                    string strOutput = startProcess("netsh", "wlan show hostednetwork");
-
-                    string[] strOutputArray = strOutput.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    List<NetworkSetting> settings = new List<NetworkSetting>();
-
-                    for (int i = 0; i < strOutputArray.Length; i++)
+                    NetworkSetting ns = new NetworkSetting(strOutputArray[i]);
+                    if (ns.ToString() != "")
                     {
-                        NetworkSetting ns = new NetworkSetting(strOutputArray[i]);
-                        if (ns.ToString() != "")
-                        {
-                            settings.Add(ns);
-                        }
+                        settings.Add(ns);
                     }
-
-                    StringBuilder text = new StringBuilder();
-                    settings.ForEach((NetworkSetting item) =>
-                    {
-                        text.AppendLine(item.ToString());
-                    });
-
-                    Invoke((MethodInvoker)delegate
-                    {
-                        statusBox.Text = text.ToString();
-                        if (settings.Count < 3)
-                        {
-                            // wlan host is not available
-                            statusBox.Text = strOutput;
-                            button1.Visible = false;
-                            button2.Visible = false;
-                            inputName.Enabled = false;
-                            inputPass.Enabled = false;
-                        }
-                        else if (settings.Count > 6)
-                        {
-                            // network enabled
-                            button1.Visible = false;
-                            button2.Visible = true;
-                            inputName.Enabled = false;
-                            inputPass.Enabled = false;
-                        }
-                        else
-                        {
-                            // network disabled
-                            button1.Visible = true;
-                            button2.Visible = false;
-                            inputName.Enabled = true;
-                            inputPass.Enabled = true;
-
-                            if (Properties.Settings.Default.AutoStart)
-                            {
-                                startHostedNetwork();
-                                Thread.Sleep(1000);
-                            }
-                        }
-                    });
                 }
 
-                Thread.Sleep(500);
+                StringBuilder text = new StringBuilder();
+                settings.ForEach((NetworkSetting item) =>
+                {
+                    text.AppendLine(item.ToString());
+                });
+
+                Invoke((MethodInvoker)delegate
+                {
+                    statusBox.Text = text.ToString();
+                    if (settings.Count < 3)
+                    {
+                        // wlan host is not available
+                        statusBox.Text = strOutput;
+                        button1.Visible = false;
+                        button2.Visible = false;
+                        inputName.Enabled = false;
+                        inputPass.Enabled = false;
+                    }
+                    else if (settings.Count > 6)
+                    {
+                        // network enabled
+                        button1.Visible = false;
+                        button2.Visible = true;
+                        inputName.Enabled = false;
+                        inputPass.Enabled = false;
+                    }
+                    else
+                    {
+                        // network disabled
+                        button1.Visible = true;
+                        button2.Visible = false;
+                        inputName.Enabled = true;
+                        inputPass.Enabled = true;
+
+                        if (Properties.Settings.Default.AutoStart)
+                        {
+                            startHostedNetwork();
+                            Thread.Sleep(1000);
+                        }
+                    }
+                });
             }
+
+            int timeout = (this.WindowState == FormWindowState.Minimized) ? 7500 : 500;
+
+            Thread.Sleep(timeout);
         }
 
         private void startHostedNetwork()
