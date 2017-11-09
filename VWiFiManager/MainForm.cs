@@ -274,10 +274,10 @@ namespace VWiFiManager
 
         private void trayIcon_DoubleClick(object sender, EventArgs e)
         {
-            ShowInTaskbar = true;
-            this.Show();
+            Show();
             WindowState = FormWindowState.Normal;
-            this.BringToFront();
+            ShowInTaskbar = true;
+            BringToFront();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -285,6 +285,7 @@ namespace VWiFiManager
             if (this.WindowState == FormWindowState.Minimized)
             {
                 ShowInTaskbar = false;
+                Hide();
             }
         }
 
